@@ -25,6 +25,20 @@ El sistema actualmente soporta:
 *   **Seguridad:** Spring Security + JWT
 *   **Build Tool:** Maven
 
+## 🔒 Seguridad y Roles
+El sistema implementa Control de Acceso Basado en Roles (RBAC):
+
+1.  **SUPER_ADMIN**: Acceso total. Puede administrar usuarios, clientes, productos y ver todos los reportes.
+2.  **ADMIN**: Gestión operativa (Inventarios, Rutas, Liquidación). No puede administrar usuarios.
+3.  **REPARTIDOR**: Acceso limitado.
+    *   Solo puede ver rutas activas.
+    *   Solo puede registrar ventas en SU propia ruta asignada (Validación de identidad).
+    *   No puede alterar inventarios de planta ni cerrar rutas manualmente.
+
+## 🚀 Optimizaciones
+*   **Cálculo de Liquidaciones:** Se utilizan consultas JPQL/Nativas para sumar ventas directamente en la base de datos, evitando procesar listas en memoria para mayor velocidad.
+
+
 ---
 
 ## 📚 Documentación de API

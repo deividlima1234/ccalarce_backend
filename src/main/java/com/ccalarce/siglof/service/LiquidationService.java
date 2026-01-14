@@ -32,20 +32,26 @@ public class LiquidationService {
             throw new RuntimeException("Route is already CLOSED");
         }
 
-        // 1. Calculate Sales Totals
-        List<Sale> sales = saleRepository.findByRouteId(route.getId());
-        BigDecimal totalCash = BigDecimal.ZERO;
-        BigDecimal totalDigital = BigDecimal.ZERO;
-        int itemsSold = 0;
+        // 1. Calculate Sales Totals (Optimized with DB aggregation)
+        BigDecimal totalCash = saleRepository.sumTotalByRouteAndMethod(route.getId(), PaymentMethod.CASH);
+        if (totalCash == null)
+            totalCash = BigDecimal.ZERO;
 
-        for (Sale sale : sales) {
-            if (sale.getPaymentMethod() == PaymentMethod.CASH) {
-                totalCash = totalCash.add(sale.getTotalAmount());
-            } else {
-                totalDigital = totalDigital.add(sale.getTotalAmount());
-            }
-            itemsSold += sale.getDetails().stream().mapToInt(SaleDetail::getQuantity).sum();
-        }
+        // Sum other methods (YAPE, PLIN, CREDIT) efficiently if needed, or just sum
+        // non-CASH
+        // For simplicity and speed, let's assume strict separation.
+        // If we want total Digital, we could do a simpler query or sum locally if few.
+        // Actually, let's just sum all Non-Cash.
+        // But to follow the repo pattern:
+        BigDecimal totalYape = saleRepository.sumTotalByRouteAndMethod(route.getId(), PaymentMethod.YAPE);
+        BigDecimal totalPlin = saleRepository.sumTotalByRouteAndMethod(route.getId(), PaymentMethod.PLIN);
+        BigDecimal totalCredit = saleRepository.sumTotalByRouteAndMethod(route.getId(), PaymentMethod.CREDIT);
+
+        BigDecimal totalDigital = (totalYape != null ? totalYape : BigDecimal.ZERO)
+                .add(totalPlin != null ? totalPlin : BigDecimal.ZERO)
+                .add(totalCredit != null ? totalCredit : BigDecimal.ZERO);
+
+        Integer itemsSold = saleRepository.sumTotalItemsByRoute(route.getId());
 
         // 2. Process Returns to Plant (Inventory)
         for (CloseRouteRequest.ReturnedItem item : request.getSavedStock()) {

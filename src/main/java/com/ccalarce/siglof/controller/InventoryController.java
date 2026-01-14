@@ -6,6 +6,7 @@ import com.ccalarce.siglof.service.InventoryService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,6 +17,7 @@ public class InventoryController {
     private final InventoryService service;
 
     @PostMapping("/movement")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
     public ResponseEntity<InventoryMovement> createMovement(@RequestBody MovementRequest request) {
         return ResponseEntity.ok(
                 service.registerMovement(
