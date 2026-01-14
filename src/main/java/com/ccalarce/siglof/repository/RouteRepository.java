@@ -7,6 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;List<Route>findByStatus(RouteStatus status);
+import java.util.Optional;
 
-Optional<Route>findByDriverAndStatus(User driver,RouteStatus status);}
+@Repository
+public interface RouteRepository extends JpaRepository<Route, Long> {
+    List<Route> findByStatus(RouteStatus status);
+
+    Optional<Route> findByDriverAndStatus(User driver, RouteStatus status);
+}
