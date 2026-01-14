@@ -1,5 +1,8 @@
 package com.ccalarce.siglof.model.entity;
 
+import com.ccalarce.siglof.model.enums.ClientType;
+import com.ccalarce.siglof.model.enums.CommercialStatus;
+import com.ccalarce.siglof.model.enums.PaymentFrequency;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,11 +37,33 @@ public class Client {
     private Double latitude;
     private Double longitude;
 
+    @Enumerated(EnumType.STRING)
+    private ClientType type;
+
+    @Enumerated(EnumType.STRING)
+    private CommercialStatus commercialStatus;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentFrequency paymentFrequency;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "token_qr_id", referencedColumnName = "id")
+    private TokenQR tokenQr;
+
+    @Column(name = "active")
+    private Boolean active;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
+        if (this.active == null) {
+            this.active = true;
+        }
+        if (this.commercialStatus == null) {
+            this.commercialStatus = CommercialStatus.ACTIVO;
+        }
     }
 }

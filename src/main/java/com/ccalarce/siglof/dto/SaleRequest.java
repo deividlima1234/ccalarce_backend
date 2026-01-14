@@ -9,6 +9,8 @@ public class SaleRequest {
     private Long routeId;
     private Long clientId;
     private PaymentMethod paymentMethod;
+    private Double latitude;
+    private Double longitude;
     private List<SaleItem> items;
 
     @Data

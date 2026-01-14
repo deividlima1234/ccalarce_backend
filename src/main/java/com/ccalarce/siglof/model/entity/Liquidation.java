@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import com.ccalarce.siglof.model.enums.LiquidationStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -37,10 +38,19 @@ public class Liquidation {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    // Can add differences/discrepancies later
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private LiquidationStatus status;
+
+    @ManyToOne
+    @JoinColumn(name = "approved_by_user_id")
+    private User approvedBy;
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
+        if (this.status == null) {
+            this.status = LiquidationStatus.PENDING;
+        }
     }
 }

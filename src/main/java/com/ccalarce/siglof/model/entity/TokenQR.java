@@ -1,48 +1,38 @@
 package com.ccalarce.siglof.model.entity;
 
-import com.ccalarce.siglof.model.enums.PaymentMethod;
+import com.ccalarce.siglof.model.enums.TokenStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "sales")
-public class Sale {
+@Table(name = "tokens_qr")
+public class TokenQR {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "route_id", nullable = false)
-    private Route route;
-
-    @ManyToOne
-    @JoinColumn(name = "client_id", nullable = false)
-    private Client client;
+    @Column(nullable = false, unique = true)
+    private String code; // UUID representation
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PaymentMethod paymentMethod;
+    private TokenStatus status;
 
-    @Column(nullable = false)
-    private BigDecimal totalAmount;
+    @OneToOne(mappedBy = "tokenQr")
+    private Client client;
 
-    @OneToMany(mappedBy = "sale", cascade = CascadeType.ALL)
-    private List<SaleDetail> details;
-
-    private Double latitude;
-    private Double longitude;
+    @Column(name = "assigned_at")
+    private LocalDateTime assignedAt;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -50,5 +40,8 @@ public class Sale {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
+        if (this.status == null) {
+            this.status = TokenStatus.DISPONIBLE;
+        }
     }
 }

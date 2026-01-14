@@ -33,4 +33,7 @@ public class RouteStock {
 
     @Column(nullable = false)
     private Integer currentQuantity; // Decreases with sales
+
+    @Column(name = "return_quantity")
+    private Integer returnQuantity; // Calculated at liquidation
 }

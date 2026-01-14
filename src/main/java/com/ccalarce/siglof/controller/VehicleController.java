@@ -23,7 +23,7 @@ public class VehicleController {
     }
 
     @PostMapping
-    public ResponseEntity<Vehicle> create(@RequestBody Vehicle vehicle) {
+    public ResponseEntity<Vehicle> create(@RequestBody @jakarta.validation.Valid Vehicle vehicle) {
         return ResponseEntity.ok(service.save(vehicle));
     }
 

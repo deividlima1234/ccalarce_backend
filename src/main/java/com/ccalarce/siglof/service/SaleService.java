@@ -44,6 +44,8 @@ public class SaleService {
                                 .route(route)
                                 .client(client)
                                 .paymentMethod(request.getPaymentMethod())
+                                .latitude(request.getLatitude())
+                                .longitude(request.getLongitude())
                                 .details(new ArrayList<>())
                                 .build();
 

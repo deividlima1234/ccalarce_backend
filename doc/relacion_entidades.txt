@@ -1,0 +1,366 @@
+Perfecto. A continuación te presento una **explicación exhaustiva, clara y orientada al cliente**, no técnica en exceso pero **con el nivel de detalle necesario** para que entienda:
+
+* Qué información maneja el sistema
+* Cómo se relacionan las entidades entre sí
+* Qué ve cada rol en el frontend
+* Cómo fluye la operación diaria (creación → asignación → venta → liquidación)
+
+Este texto **puede usarse directamente para explicar el proyecto al cliente**.
+
+---
+
+# 1. VISIÓN GENERAL PARA EL CLIENTE
+
+El sistema funciona como una **plataforma centralizada** donde toda la operación de la distribuidora de gas está conectada:
+
+* Personas (usuarios)
+* Clientes
+* Vehículos
+* Rutas
+* Ventas
+* Fidelización
+* Liquidaciones
+* Auditoría
+
+Nada funciona aislado.
+**Cada acción queda relacionada y registrada.**
+
+---
+
+# 2. USUARIOS Y ROLES (QUIÉN USA EL SISTEMA)
+
+## Entidad: USUARIO
+
+Un usuario representa a una **persona que usa el sistema**, no a un cliente.
+
+### Campos del Usuario
+
+* ID del usuario (interno)
+* Nombre completo
+* Usuario (login)
+* Rol asignado (SuperAdmin / Admin / Repartidor)
+* Estado (activo/inactivo)
+* Fecha de creación
+
+### Relación clave
+
+* Un **usuario puede estar asignado a rutas**
+* Un **usuario puede realizar ventas**
+* Un **usuario puede aprobar liquidaciones** (solo Admin)
+* Un **usuario puede generar auditoría** (SuperAdmin)
+
+---
+
+## Roles y comportamiento
+
+### SuperAdmin
+
+* Crea y administra usuarios
+* Ve auditoría
+* Accede a todas las pantallas
+* Configura el sistema
+
+### Admin
+
+* Maneja clientes, ventas, rutas, vehículos, reportes
+* NO puede:
+
+  * Crear usuarios
+  * Ver auditoría
+
+### Repartidor
+
+* Solo ve:
+
+  * Su ruta asignada
+  * Sus ventas
+  * Su liquidación diaria
+
+---
+
+# 3. CLIENTES (A QUIÉN SE LE VENDE)
+
+## Entidad: CLIENTE
+
+Un cliente representa a una persona o empresa que compra gas.
+
+### Campos del Cliente
+
+* ID del cliente
+* Nombre o razón social
+* Tipo de cliente:
+
+  * Restaurante
+  * Convencional
+* Documento:
+
+  * DNI o RUC
+* Teléfono
+* Dirección
+* Coordenadas GPS (latitud y longitud)
+* Frecuencia de compra:
+
+  * Semanal
+  * Mensual
+* Estado comercial:
+
+  * Activo
+  * Frecuente
+  * Alerta
+* Token QR asignado (opcional)
+* Estado del cliente (activo/inactivo)
+
+---
+
+### Relación del cliente con el sistema
+
+* Un cliente:
+
+  * Puede tener muchas ventas
+  * Puede tener **un solo QR activo**
+  * Aparece en el mapa comercial
+  * Acumula puntos de fidelización
+
+---
+
+# 4. TARJETAS QR Y FIDELIZACIÓN
+
+## Entidad: TOKEN QR
+
+El QR **no se crea con el cliente**, se crea antes.
+
+### Campos del Token QR
+
+* ID del token
+* Código único (impreso en el QR)
+* Estado:
+
+  * Disponible
+  * Asignado
+  * Invalidado
+* Cliente asignado (si existe)
+* Fecha de asignación
+
+### Flujo explicado al cliente
+
+1. Se imprimen tarjetas QR en lote
+2. Las tarjetas no tienen dueño
+3. Cuando llega un cliente:
+
+   * Se registra el cliente
+   * Se le asigna una tarjeta
+4. El QR queda ligado al cliente
+
+---
+
+### ¿Qué pasa si pierde la tarjeta?
+
+1. Admin invalida el token
+2. Se asigna uno nuevo
+3. El cliente no pierde su historial
+
+---
+
+# 5. VEHÍCULOS (CÓMO SE REPARTE)
+
+## Entidad: VEHÍCULO
+
+Representa una unidad de reparto.
+
+### Campos del Vehículo
+
+* ID del vehículo
+* Placa
+* Descripción
+* Identificador GPS externo
+* Estado (activo/inactivo)
+
+### Relación
+
+* Un vehículo:
+
+  * Se asigna a una ruta diaria
+  * Tiene ubicación en tiempo real (GPS)
+
+---
+
+# 6. RUTAS (OPERACIÓN DIARIA)
+
+## Entidad: RUTA
+
+Una ruta representa **un día de trabajo**.
+
+### Campos de la Ruta
+
+* ID de ruta
+* Fecha
+* Repartidor asignado
+* Vehículo asignado
+* Estado:
+
+  * Abierta
+  * Cerrada
+
+---
+
+### Relación de la ruta
+
+* Una ruta:
+
+  * Tiene un repartidor
+  * Tiene un vehículo
+  * Tiene ventas
+  * Tiene asignación de balones
+  * Termina en una liquidación
+
+---
+
+# 7. ASIGNACIÓN DE BALONES
+
+## Entidad: ASIGNACIÓN DE BALONES
+
+Define cuántos balones salen ese día.
+
+### Campos
+
+* Ruta
+* Cantidad asignada
+* Cantidad devuelta
+
+Esto permite:
+
+* Control físico
+* Evitar pérdidas
+* Cuadrar liquidaciones
+
+---
+
+# 8. VENTAS (EL CORAZÓN DEL SISTEMA)
+
+## Entidad: VENTA
+
+Cada venta **siempre pertenece a una ruta**.
+
+### Campos de la Venta
+
+* ID de venta
+* Ruta
+* Cliente
+* Repartidor
+* Fecha y hora
+* Cantidad de balones
+* Monto total
+* Tipo de pago:
+
+  * Efectivo
+  * Transferencia
+* Ubicación de entrega (GPS)
+
+---
+
+### Relación
+
+* Una venta:
+
+  * Se hace dentro de una ruta
+  * Pertenece a un cliente
+  * Puede generar puntos QR
+
+---
+
+# 9. ESCANEO QR Y PUNTOS
+
+## Entidad: MOVIMIENTO DE FIDELIZACIÓN
+
+Cada escaneo queda registrado.
+
+### Campos
+
+* Token QR
+* Venta asociada
+* Puntos generados
+* Fecha
+
+Esto permite:
+
+* Ver clientes fieles
+* Aplicar descuentos
+* Hacer campañas
+
+---
+
+# 10. LIQUIDACIÓN DIARIA
+
+## Entidad: LIQUIDACIÓN
+
+Resume todo el día de un repartidor.
+
+### Campos
+
+* Ruta
+* Total de ventas
+* Total de balones vendidos
+* Estado:
+
+  * Pendiente
+  * Aprobado
+* Usuario que aprueba (Admin)
+* Fecha
+
+---
+
+### Flujo explicado
+
+1. Repartidor cierra su ruta
+2. El sistema calcula la liquidación
+3. Admin revisa
+4. Admin aprueba o rechaza
+
+---
+
+# 11. AUDITORÍA (CONTROL TOTAL)
+
+## Entidad: AUDITORÍA
+
+Solo visible para SuperAdmin.
+
+### Campos
+
+* Usuario
+* Acción realizada
+* Entidad afectada
+* Fecha
+* IP
+
+Esto protege a la empresa.
+
+---
+
+# 12. ¿CÓMO SE VE ESTO EN EL FRONTEND?
+
+### Dashboard Admin
+
+* Ventas del día
+* Rutas activas
+* Mapa de vehículos
+* Clientes por color
+
+### Vista Repartidor
+
+* Su ruta
+* Lista de clientes
+* Botón de venta
+* Escáner QR
+* Botón cerrar jornada
+
+---
+
+# 13. MENSAJE FINAL PARA EL CLIENTE
+
+Este sistema:
+
+* Conecta toda la operación
+* Evita pérdidas
+* Mejora control
+* Fideliza clientes
+* Escala en el tiempo

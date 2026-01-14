@@ -80,4 +80,20 @@ public class LiquidationService {
 
         return liquidation;
     }
+
+    @Transactional
+    @com.ccalarce.siglof.annotation.Auditable(action = "APPROVE_LIQUIDATION")
+    public Liquidation approveLiquidation(Long id, User adminUser) {
+        Liquidation liquidation = liquidationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Liquidation not found"));
+
+        if (liquidation.getStatus() == com.ccalarce.siglof.model.enums.LiquidationStatus.APPROVED) {
+            throw new RuntimeException("Liquidation is already APPROVED");
+        }
+
+        liquidation.setStatus(com.ccalarce.siglof.model.enums.LiquidationStatus.APPROVED);
+        liquidation.setApprovedBy(adminUser);
+
+        return liquidationRepository.save(liquidation);
+    }
 }
