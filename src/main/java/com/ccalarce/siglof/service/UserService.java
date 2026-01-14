@@ -67,6 +67,14 @@ public class UserService {
         return mapToDto(userRepository.save(user));
     }
 
+    @Transactional
+    @com.ccalarce.siglof.annotation.Auditable(action = "DELETE_USER")
+    public void deleteUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        userRepository.delete(user);
+    }
+
     private UserDto mapToDto(User user) {
         return UserDto.builder()
                 .id(user.getId())
