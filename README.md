@@ -140,5 +140,26 @@ Todas las rutas están prefijadas con: `/api/v1`
 
 ---
 
+### 7. Usuarios (`/users`)
+#### Ver mi perfil
+*   **Endpoint:** `GET /api/v1/users/me`
+*   **Respuesta:** Datos del usuario logueado.
+
+#### Gestión de Usuarios (SOLO SUPER ADMIN)
+*   **Listar:** `GET /api/v1/users`
+*   **Crear:** `POST /api/v1/users` (Mismo body que Register)
+*   **Editar:** `PUT /api/v1/users/{id}`
+    *   **Body:**
+        ```json
+        {
+          "fullName": "Nuevo Nombre",
+          "role": "ADMIN",
+          "active": false,
+          "password": "newPassword" // Opcional
+        }
+        ```
+
+---
+
 ## 👨‍💻 Créditos
 **Desarrollado por Eddam para ccalarce**
