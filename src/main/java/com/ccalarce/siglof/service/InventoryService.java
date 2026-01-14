@@ -17,6 +17,7 @@ public class InventoryService {
     private final ProductRepository productRepository;
 
     @Transactional
+    @com.ccalarce.siglof.annotation.Auditable(action = "REGISTER_MOVEMENT")
     public InventoryMovement registerMovement(Long productId, Integer quantity, InventoryMovementType type,
             String reason) {
         Product product = productRepository.findById(productId)

@@ -24,6 +24,7 @@ public class LiquidationService {
     private final InventoryService inventoryService;
 
     @Transactional
+    @com.ccalarce.siglof.annotation.Auditable(action = "CLOSE_ROUTE")
     public Liquidation closeRoute(CloseRouteRequest request) {
         Route route = routeRepository.findById(request.getRouteId())
                 .orElseThrow(() -> new RuntimeException("Route not found"));

@@ -71,10 +71,10 @@ No requiere token.
 
 ### 2.2 Listar Usuarios (Admin)
 *   **URL:** `GET /api/v1/users`
-*   **Acceso:** `SUPER_ADMIN`
+*   **Acceso:** `SUPER_ADMIN`, `ADMIN` (Nuevo: Admin puede listar para asignar choferes).
 *   **Response (200 OK):** Lista de objetos UserDto (ver 2.1).
 
-### 2.3 Crear Usuario (Admin)
+### 2.3 Crear Usuario (Super Admin)
 *   **URL:** `POST /api/v1/users`
 *   **Acceso:** `SUPER_ADMIN`
 *   **Request Body:** Mismo que `RegisterRequest` (ver 1.2).
@@ -99,6 +99,7 @@ No requiere token.
 ### 3.1 Registrar Movimiento
 *   **URL:** `POST /api/v1/inventory/movement`
 *   **Acceso:** `SUPER_ADMIN`, `ADMIN`
+*   **Auditoría:** Se registra automáticamente como `REGISTER_MOVEMENT`.
 *   **Descripción:** Afecta directamente al stock en planta.
 *   **Request Body:**
     ```json
@@ -108,6 +109,28 @@ No requiere token.
       "type": "PURCHASE",     // Enum: PURCHASE, ADJUSTMENT, RETURN, ROUTE_LOAD
       "reason": "Factura 001" // String
     }
+    ```
+
+---
+
+## 8. Auditoría (`/audit`) - [NUEVO]
+
+### 8.1 Ver Logs de Auditoría
+*   **URL:** `GET /api/v1/audit`
+*   **Acceso:** `SUPER_ADMIN` (Exclusivo)
+*   **Descripción:** Lista cronológica de todas las acciones críticas del sistema (Creación de usuarios, ventas, movimientos, cierres).
+*   **Response:**
+    ```json
+    [
+      {
+        "id": 15,
+        "username": "admin_user",
+        "action": "REGISTER_SALE",
+        "resource": "SaleService",
+        "details": "Args: [...] | Result: {...}",
+        "timestamp": "2023-11-01T10:00:00"
+      }
+    ]
     ```
     *Nota: `ROUTE_LOAD` descuenta stock, `PURCHASE`, `RETURN`, `ADJUSTMENT` suman (normalmente).*
 
@@ -175,7 +198,8 @@ No requiere token.
 
 ### 6.1 Cerrar Ruta
 *   **URL:** `POST /api/v1/liquidation/close`
-*   **Acceso:** `SUPER_ADMIN`, `ADMIN`
+*   **Acceso:** `SUPER_ADMIN`, `ADMIN`, `REPARTIDOR` (Nuevo: Choferes liquidan su propia ruta).
+*   **Auditoría:** Se registra como `CLOSE_ROUTE`.
 *   **Descripción:** Finaliza la jornada. Calcula diferencias y retorna stock sobrante a planta.
 *   **Request Body:**
     ```json

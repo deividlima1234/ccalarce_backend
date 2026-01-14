@@ -16,7 +16,7 @@ public class LiquidationController {
     private final LiquidationService service;
 
     @PostMapping("/close")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'REPARTIDOR')")
     public ResponseEntity<Liquidation> closeRoute(@RequestBody CloseRouteRequest request) {
         return ResponseEntity.ok(service.closeRoute(request));
     }

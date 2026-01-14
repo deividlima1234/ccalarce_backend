@@ -33,6 +33,7 @@ public class UserService {
     }
 
     @Transactional
+    @com.ccalarce.siglof.annotation.Auditable(action = "CREATE_USER")
     public UserDto createUser(RegisterRequest request) {
         if (userRepository.findByUsername(request.getUsername()).isPresent()) {
             throw new RuntimeException("Username already exists");
@@ -48,6 +49,7 @@ public class UserService {
     }
 
     @Transactional
+    @com.ccalarce.siglof.annotation.Auditable(action = "UPDATE_USER")
     public UserDto updateUser(Long id, UpdateUserRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found"));
