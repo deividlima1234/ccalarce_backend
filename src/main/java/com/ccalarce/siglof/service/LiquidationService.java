@@ -96,4 +96,11 @@ public class LiquidationService {
 
         return liquidationRepository.save(liquidation);
     }
+
+    /**
+     * Get all liquidations with PENDING status (for Admin dashboard)
+     */
+    public List<Liquidation> findPendingLiquidations() {
+        return liquidationRepository.findByStatus(com.ccalarce.siglof.model.enums.LiquidationStatus.PENDING);
+    }
 }
