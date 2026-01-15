@@ -43,8 +43,18 @@ public class Liquidation {
     private LiquidationStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "approved_by_user_id")
-    private User approvedBy;
+    @JoinColumn(name = "reviewed_by_user_id")
+    private User reviewedBy;
+
+    @Column(name = "reviewed_at")
+    private LocalDateTime reviewedAt;
+
+    /**
+     * Nota/mensaje del Admin para el Repartidor
+     * Ej: "Falta S/50 en efectivo, por favor revisar"
+     */
+    @Column(name = "admin_note", length = 500)
+    private String adminNote;
 
     @PrePersist
     protected void onCreate() {

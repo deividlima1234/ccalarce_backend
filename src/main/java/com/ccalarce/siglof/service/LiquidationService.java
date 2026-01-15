@@ -82,17 +82,29 @@ public class LiquidationService {
     }
 
     @Transactional
-    @com.ccalarce.siglof.annotation.Auditable(action = "APPROVE_LIQUIDATION")
-    public Liquidation approveLiquidation(Long id, User adminUser) {
+    @com.ccalarce.siglof.annotation.Auditable(action = "REVIEW_LIQUIDATION")
+    public Liquidation reviewLiquidation(Long id, User adminUser,
+            com.ccalarce.siglof.model.enums.LiquidationStatus newStatus, String note) {
+
         Liquidation liquidation = liquidationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Liquidation not found"));
 
+        // Cannot review already APPROVED liquidations
         if (liquidation.getStatus() == com.ccalarce.siglof.model.enums.LiquidationStatus.APPROVED) {
-            throw new RuntimeException("Liquidation is already APPROVED");
+            throw new RuntimeException("Liquidation is already APPROVED and cannot be changed");
         }
 
-        liquidation.setStatus(com.ccalarce.siglof.model.enums.LiquidationStatus.APPROVED);
-        liquidation.setApprovedBy(adminUser);
+        // Validate note for REJECTED and OBSERVED
+        if ((newStatus == com.ccalarce.siglof.model.enums.LiquidationStatus.REJECTED
+                || newStatus == com.ccalarce.siglof.model.enums.LiquidationStatus.OBSERVED)
+                && (note == null || note.trim().isEmpty())) {
+            throw new RuntimeException("A note is required when rejecting or observing a liquidation");
+        }
+
+        liquidation.setStatus(newStatus);
+        liquidation.setReviewedBy(adminUser);
+        liquidation.setReviewedAt(java.time.LocalDateTime.now());
+        liquidation.setAdminNote(note);
 
         return liquidationRepository.save(liquidation);
     }
@@ -102,5 +114,12 @@ public class LiquidationService {
      */
     public List<Liquidation> findPendingLiquidations() {
         return liquidationRepository.findByStatus(com.ccalarce.siglof.model.enums.LiquidationStatus.PENDING);
+    }
+
+    /**
+     * Get liquidations that were OBSERVED (driver needs to review)
+     */
+    public List<Liquidation> findObservedLiquidations() {
+        return liquidationRepository.findByStatus(com.ccalarce.siglof.model.enums.LiquidationStatus.OBSERVED);
     }
 }
