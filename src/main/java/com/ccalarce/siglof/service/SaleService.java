@@ -91,4 +91,25 @@ public class SaleService {
                 // Save Sale (Cascade to details)
                 return saleRepository.save(sale);
         }
+
+        /**
+         * Get all sales for a specific route (for Admin dashboard)
+         */
+        public java.util.List<Sale> findByRouteId(Long routeId) {
+                return saleRepository.findByRouteId(routeId);
+        }
+
+        /**
+         * Get sales for the current driver's active route (for Repartidor mobile)
+         */
+        public java.util.List<Sale> findByCurrentDriver() {
+                User currentUser = (User) org.springframework.security.core.context.SecurityContextHolder.getContext()
+                                .getAuthentication().getPrincipal();
+
+                Route activeRoute = routeRepository.findByDriverAndStatus(currentUser,
+                                com.ccalarce.siglof.model.enums.RouteStatus.OPEN)
+                                .orElseThrow(() -> new RuntimeException("No active route found for this driver"));
+
+                return saleRepository.findByRouteId(activeRoute.getId());
+        }
 }
