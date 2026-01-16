@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/inventory")
 @RequiredArgsConstructor
@@ -25,6 +27,12 @@ public class InventoryController {
                         request.getQuantity(),
                         request.getType(),
                         request.getReason()));
+    }
+
+    @GetMapping("/movements")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
+    public ResponseEntity<List<InventoryMovement>> getAllMovements() {
+        return ResponseEntity.ok(service.getAllMovements());
     }
 
     @Data
