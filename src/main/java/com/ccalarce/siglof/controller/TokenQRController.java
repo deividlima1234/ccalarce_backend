@@ -23,6 +23,12 @@ public class TokenQRController {
         return ResponseEntity.ok(service.generateBatch(request.getQuantity()));
     }
 
+    @GetMapping
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
+    public ResponseEntity<List<TokenQR>> getAll() {
+        return ResponseEntity.ok(service.findAll());
+    }
+
     @GetMapping("/{code}")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'REPARTIDOR')")
     public ResponseEntity<TokenQR> getByCode(@PathVariable String code) {

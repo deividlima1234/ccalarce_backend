@@ -71,4 +71,9 @@ public class TokenQRService {
         // saved.
         return repository.save(token);
     }
+
+    public List<TokenQR> findAll() {
+        return repository.findAll(org.springframework.data.domain.Sort
+                .by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
+    }
 }
