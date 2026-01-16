@@ -12,6 +12,7 @@ import java.util.List;
 public class ClientService {
 
     private final ClientRepository repository;
+    private final TokenQRService tokenQRService;
 
     public List<Client> findAll() {
         return repository.findAll();
@@ -22,6 +23,12 @@ public class ClientService {
     }
 
     public Client save(Client client) {
+        // Handle Token Assignment if provided
+        if (client.getTokenQr() != null && client.getTokenQr().getCode() != null) {
+            com.ccalarce.siglof.model.entity.TokenQR assignedToken = tokenQRService
+                    .assignTokenToClient(client.getTokenQr().getCode(), client);
+            client.setTokenQr(assignedToken);
+        }
         return repository.save(client);
     }
 
