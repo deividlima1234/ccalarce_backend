@@ -39,6 +39,14 @@ public class ClientService {
         existing.setPhoneNumber(clientRequest.getPhoneNumber());
         existing.setLatitude(clientRequest.getLatitude());
         existing.setLongitude(clientRequest.getLongitude());
+
+        // Allow assigning a TokenQR during update (e.g. initial deployment)
+        if (clientRequest.getTokenQr() != null && clientRequest.getTokenQr().getCode() != null) {
+            com.ccalarce.siglof.model.entity.TokenQR assignedToken = tokenQRService
+                    .assignTokenToClient(clientRequest.getTokenQr().getCode(), existing);
+            existing.setTokenQr(assignedToken);
+        }
+
         // Document Number usually shouldn't change, but depends on rules. Keeping it
         // safe for now.
         return repository.save(existing);
