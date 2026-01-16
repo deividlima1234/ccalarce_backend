@@ -15,7 +15,7 @@ public class ClientService {
     private final TokenQRService tokenQRService;
 
     public List<Client> findAll() {
-        return repository.findAll();
+        return repository.findAllWithTokens();
     }
 
     public Client findById(Long id) {

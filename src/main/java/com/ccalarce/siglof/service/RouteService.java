@@ -64,14 +64,14 @@ public class RouteService {
         }
 
         public List<Route> findActiveRoutes() {
-                return routeRepository.findByStatus(RouteStatus.OPEN);
+                return routeRepository.findByStatusWithDetails(RouteStatus.OPEN);
         }
 
         public Route getCurrentRouteForDriver(String username) {
                 User driver = userRepository.findByUsername(username)
                                 .orElseThrow(() -> new RuntimeException("Driver not found"));
 
-                return routeRepository.findByDriverAndStatus(driver, RouteStatus.OPEN)
+                return routeRepository.findByDriverAndStatusWithDetails(driver, RouteStatus.OPEN)
                                 .orElseThrow(() -> new RuntimeException("No active route found for this driver"));
         }
 }

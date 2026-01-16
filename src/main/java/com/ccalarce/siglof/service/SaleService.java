@@ -96,7 +96,7 @@ public class SaleService {
          * Get all sales for a specific route (for Admin dashboard)
          */
         public java.util.List<Sale> findByRouteId(Long routeId) {
-                return saleRepository.findByRouteId(routeId);
+                return saleRepository.findByRouteIdWithDetails(routeId);
         }
 
         /**
@@ -106,10 +106,10 @@ public class SaleService {
                 User currentUser = (User) org.springframework.security.core.context.SecurityContextHolder.getContext()
                                 .getAuthentication().getPrincipal();
 
-                Route activeRoute = routeRepository.findByDriverAndStatus(currentUser,
+                Route activeRoute = routeRepository.findByDriverAndStatusWithDetails(currentUser,
                                 com.ccalarce.siglof.model.enums.RouteStatus.OPEN)
                                 .orElseThrow(() -> new RuntimeException("No active route found for this driver"));
 
-                return saleRepository.findByRouteId(activeRoute.getId());
+                return saleRepository.findByRouteIdWithDetails(activeRoute.getId());
         }
 }

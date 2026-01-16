@@ -34,7 +34,7 @@ public class Route {
     @Column(nullable = false)
     private RouteStatus status;
 
-    @OneToMany(mappedBy = "route", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "route", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RouteStock> stock;
 
     @Column(name = "opened_at")

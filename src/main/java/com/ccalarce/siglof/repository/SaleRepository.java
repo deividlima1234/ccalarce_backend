@@ -14,6 +14,20 @@ import java.util.List;
 public interface SaleRepository extends JpaRepository<Sale, Long> {
     List<Sale> findByRouteId(Long routeId);
 
+    /**
+     * Optimized query with JOIN FETCH to load Sales with all relationships.
+     * Prevents N+1 queries by eagerly fetching route, client (with tokenQr), and
+     * details (with product).
+     */
+    @Query("SELECT DISTINCT s FROM Sale s " +
+            "LEFT JOIN FETCH s.route " +
+            "LEFT JOIN FETCH s.client c " +
+            "LEFT JOIN FETCH c.tokenQr " +
+            "LEFT JOIN FETCH s.details d " +
+            "LEFT JOIN FETCH d.product " +
+            "WHERE s.route.id = :routeId")
+    List<Sale> findByRouteIdWithDetails(@Param("routeId") Long routeId);
+
     @Query("SELECT SUM(s.totalAmount) FROM Sale s WHERE s.route.id = :routeId AND s.paymentMethod = :method")
     BigDecimal sumTotalByRouteAndMethod(@Param("routeId") Long routeId, @Param("method") PaymentMethod method);
 
