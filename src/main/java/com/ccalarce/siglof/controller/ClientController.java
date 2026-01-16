@@ -35,7 +35,7 @@ public class ClientController {
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'REPARTIDOR')")
     public ResponseEntity<Client> update(@PathVariable Long id, @RequestBody Client client) {
         return ResponseEntity.ok(service.update(id, client));
     }
