@@ -30,7 +30,7 @@ public class TokenQR {
     @Column(nullable = false)
     private TokenStatus status;
 
-    @OneToOne(mappedBy = "tokenQr")
+    @OneToOne(mappedBy = "tokenQr", fetch = FetchType.LAZY)
     @com.fasterxml.jackson.annotation.JsonIgnoreProperties("tokenQr")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
