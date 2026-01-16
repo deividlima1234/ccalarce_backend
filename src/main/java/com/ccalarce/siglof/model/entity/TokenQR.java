@@ -29,7 +29,7 @@ public class TokenQR {
     private TokenStatus status;
 
     @OneToOne(mappedBy = "tokenQr")
-    @com.fasterxml.jackson.annotation.JsonIgnore
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties("tokenQr")
     private Client client;
 
     @Column(name = "assigned_at")

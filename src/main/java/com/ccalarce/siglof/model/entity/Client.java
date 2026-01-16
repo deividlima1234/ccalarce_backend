@@ -48,6 +48,7 @@ public class Client {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "token_qr_id", referencedColumnName = "id")
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties("client")
     private TokenQR tokenQr;
 
     @Column(name = "active")
