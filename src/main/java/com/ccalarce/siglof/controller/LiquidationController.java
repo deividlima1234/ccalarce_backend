@@ -59,7 +59,7 @@ public class LiquidationController {
     }
 
     @GetMapping("/history")
-    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'REPARTIDOR')")
+    @PreAuthorize("hasAnyAuthority('ROLE_SUPER_ADMIN', 'ROLE_ADMIN', 'ROLE_REPARTIDOR')")
     public ResponseEntity<org.springframework.data.domain.Page<Liquidation>> getHistory(
             @RequestParam(required = false) Long driverId,
             @RequestParam(required = false) com.ccalarce.siglof.model.enums.LiquidationStatus status,
