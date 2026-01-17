@@ -98,7 +98,7 @@ public class LiquidationController {
     public ResponseEntity<String> getDebugInfo() {
         Object principal = org.springframework.security.core.context.SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal();
-        String info = "Version: 1.0.1-FixDate\n";
+        String info = "Version: 1.0.2-Probes\n"; // Bump version
         if (principal instanceof com.ccalarce.siglof.model.entity.User) {
             com.ccalarce.siglof.model.entity.User user = (com.ccalarce.siglof.model.entity.User) principal;
             info += "User: " + user.getUsername() + "\n";
@@ -107,5 +107,19 @@ public class LiquidationController {
             info += "Principal: " + principal.toString();
         }
         return ResponseEntity.ok(info);
+    }
+
+    // PROBE 1: Simple access, no params
+    @GetMapping("/history-check")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<String> historyCheck() {
+        return ResponseEntity.ok("History Access OK");
+    }
+
+    // PROBE 2: With Pageable only
+    @GetMapping("/history-pageable")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<String> historyPageable(org.springframework.data.domain.Pageable pageable) {
+        return ResponseEntity.ok("Pageable OK: " + pageable);
     }
 }
