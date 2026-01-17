@@ -57,4 +57,20 @@ public class LiquidationController {
 
         return ResponseEntity.ok(service.reviewLiquidation(id, adminUser, request.getStatus(), request.getNote()));
     }
+
+    @GetMapping("/history")
+    @PreAuthorize("hasAnyRole('SUPER_ADMIN', 'ADMIN', 'REPARTIDOR')")
+    public ResponseEntity<org.springframework.data.domain.Page<Liquidation>> getHistory(
+            @RequestParam(required = false) Long driverId,
+            @RequestParam(required = false) com.ccalarce.siglof.model.enums.LiquidationStatus status,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.LocalDateTime startDate,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.LocalDateTime endDate,
+            org.springframework.data.domain.Pageable pageable) {
+
+        Object principal = org.springframework.security.core.context.SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+        com.ccalarce.siglof.model.entity.User user = (com.ccalarce.siglof.model.entity.User) principal;
+
+        return ResponseEntity.ok(service.getHistory(user, driverId, status, startDate, endDate, pageable));
+    }
 }

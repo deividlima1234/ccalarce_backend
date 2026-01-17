@@ -122,4 +122,24 @@ public class LiquidationService {
     public List<Liquidation> findObservedLiquidations() {
         return liquidationRepository.findByStatus(com.ccalarce.siglof.model.enums.LiquidationStatus.OBSERVED);
     }
+
+    /**
+     * Get history of liquidations with filters
+     */
+    @Transactional(readOnly = true)
+    public org.springframework.data.domain.Page<Liquidation> getHistory(
+            User user,
+            Long driverId,
+            com.ccalarce.siglof.model.enums.LiquidationStatus status,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            org.springframework.data.domain.Pageable pageable) {
+
+        // If user is a driver, force driverId to their own ID
+        if (user.getRole() == com.ccalarce.siglof.model.enums.Role.REPARTIDOR) {
+            driverId = user.getId();
+        }
+
+        return liquidationRepository.findHistory(driverId, status, startDate, endDate, pageable);
+    }
 }
