@@ -46,7 +46,7 @@ public class Client {
     @Enumerated(EnumType.STRING)
     private PaymentFrequency paymentFrequency;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name = "token_qr_id", referencedColumnName = "id")
     @com.fasterxml.jackson.annotation.JsonIgnoreProperties("client")
     private TokenQR tokenQr;
