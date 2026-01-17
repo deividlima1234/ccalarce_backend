@@ -55,4 +55,7 @@ public interface RouteRepository extends JpaRepository<Route, Long> {
                         "LEFT JOIN FETCH s.product " +
                         "WHERE r.id = :id")
         Optional<Route> findByIdWithDetails(@Param("id") Long id);
+
+        @Query("SELECT SUM(rs.initialQuantity), SUM(rs.currentQuantity) FROM RouteStock rs JOIN rs.route r WHERE r.status = 'OPEN'")
+        List<Object[]> getStockSummaryForActiveRoutes();
 }

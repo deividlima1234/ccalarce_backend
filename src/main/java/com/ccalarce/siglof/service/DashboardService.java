@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Service
@@ -23,11 +24,32 @@ public class DashboardService {
 
     @Transactional(readOnly = true)
     public DashboardDTO getSummary() {
+        BigDecimal totalSales = saleRepository.sumTotalSalesByDate(LocalDate.now());
+        Integer activeRoutes = routeRepository.countByStatus(RouteStatus.OPEN);
+        Long totalClients = clientRepository.count();
+        Integer lowStock = productRepository.countByStockLessThan(10);
+        BigDecimal pendingBalance = saleRepository.sumPendingBalance();
+        String topProduct = saleRepository.findTopSellingProductToday();
+
+        // Calculate Routes Efficiency
+        Double efficiency = 0.0;
+        java.util.List<Object[]> stockSummary = routeRepository.getStockSummaryForActiveRoutes();
+        if (stockSummary != null && !stockSummary.isEmpty() && stockSummary.get(0)[0] != null) {
+            Long initialTotal = (Long) stockSummary.get(0)[0];
+            Long currentTotal = (Long) stockSummary.get(0)[1];
+            if (initialTotal > 0) {
+                efficiency = ((initialTotal - currentTotal) * 100.0) / initialTotal;
+            }
+        }
+
         return DashboardDTO.builder()
-                .totalSalesToday(saleRepository.sumTotalSalesByDate(LocalDate.now()))
-                .activeRoutesCount(routeRepository.countByStatus(RouteStatus.EN_RUTA))
-                .totalClients(clientRepository.count())
-                .lowStockAlerts(productRepository.countByStockLessThan(10)) // Using 10 as default threshold
+                .totalSalesToday(totalSales)
+                .activeRoutesCount(activeRoutes)
+                .totalClients(totalClients)
+                .lowStockAlerts(lowStock)
+                .pendingBalance(pendingBalance)
+                .topSellingProduct(topProduct != null ? topProduct : "N/A")
+                .routesCompletion(Math.round(efficiency * 100.0) / 100.0) // Round to 2 decimals
                 .build();
     }
 }

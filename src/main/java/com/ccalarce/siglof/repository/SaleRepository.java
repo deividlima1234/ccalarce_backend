@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -38,4 +37,15 @@ public interface SaleRepository extends JpaRepository<Sale, Long> {
 
     @Query("SELECT COALESCE(SUM(s.totalAmount), 0) FROM Sale s WHERE DATE(s.createdAt) = :date")
     BigDecimal sumTotalSalesByDate(@Param("date") LocalDate date);
+
+    @Query("SELECT COALESCE(SUM(s.totalAmount), 0) FROM Sale s JOIN s.route r WHERE r.status = 'OPEN'")
+    BigDecimal sumPendingBalance();
+
+    @Query(value = "SELECT p.name FROM sale_details sd " +
+            "JOIN sales s ON sd.sale_id = s.id " +
+            "JOIN products p ON sd.product_id = p.id " +
+            "WHERE DATE(s.created_at) = CURRENT_DATE " +
+            "GROUP BY p.name " +
+            "ORDER BY SUM(sd.quantity) DESC LIMIT 1", nativeQuery = true)
+    String findTopSellingProductToday();
 }

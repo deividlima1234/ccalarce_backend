@@ -16,4 +16,7 @@ public class DashboardDTO {
     private Integer activeRoutesCount;
     private Long totalClients;
     private Integer lowStockAlerts;
+    private BigDecimal pendingBalance;
+    private String topSellingProduct;
+    private Double routesCompletion;
 }
