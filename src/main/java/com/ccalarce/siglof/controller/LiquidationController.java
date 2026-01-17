@@ -63,14 +63,24 @@ public class LiquidationController {
     public ResponseEntity<org.springframework.data.domain.Page<Liquidation>> getHistory(
             @RequestParam(required = false) Long driverId,
             @RequestParam(required = false) com.ccalarce.siglof.model.enums.LiquidationStatus status,
-            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.LocalDateTime startDate,
-            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.LocalDateTime endDate,
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
             org.springframework.data.domain.Pageable pageable) {
+
+        java.time.LocalDateTime start = null;
+        java.time.LocalDateTime end = null;
+
+        if (startDate != null && !startDate.trim().isEmpty()) {
+            start = java.time.LocalDateTime.parse(startDate);
+        }
+        if (endDate != null && !endDate.trim().isEmpty()) {
+            end = java.time.LocalDateTime.parse(endDate);
+        }
 
         Object principal = org.springframework.security.core.context.SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal();
         com.ccalarce.siglof.model.entity.User user = (com.ccalarce.siglof.model.entity.User) principal;
 
-        return ResponseEntity.ok(service.getHistory(user, driverId, status, startDate, endDate, pageable));
+        return ResponseEntity.ok(service.getHistory(user, driverId, status, start, end, pageable));
     }
 }
