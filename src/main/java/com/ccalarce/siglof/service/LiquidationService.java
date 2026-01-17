@@ -135,11 +135,30 @@ public class LiquidationService {
             LocalDateTime endDate,
             org.springframework.data.domain.Pageable pageable) {
 
-        // If user is a driver, force driverId to their own ID
+        // Create Specification
+        org.springframework.data.jpa.domain.Specification<Liquidation> spec = org.springframework.data.jpa.domain.Specification
+                .where(null);
+
+        // Handle Role Restriction
+        Long effectiveDriverId = driverId;
         if (user.getRole() == com.ccalarce.siglof.model.enums.Role.REPARTIDOR) {
-            driverId = user.getId();
+            effectiveDriverId = user.getId();
+        }
+        final Long finalDriverId = effectiveDriverId;
+
+        if (finalDriverId != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("route").get("driver").get("id"), finalDriverId));
+        }
+        if (status != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("status"), status));
+        }
+        if (startDate != null) {
+            spec = spec.and((root, query, cb) -> cb.greaterThanOrEqualTo(root.get("createdAt"), startDate));
+        }
+        if (endDate != null) {
+            spec = spec.and((root, query, cb) -> cb.lessThanOrEqualTo(root.get("createdAt"), endDate));
         }
 
-        return liquidationRepository.findHistory(driverId, status, startDate, endDate, pageable);
+        return liquidationRepository.findAll(spec, pageable);
     }
 }
