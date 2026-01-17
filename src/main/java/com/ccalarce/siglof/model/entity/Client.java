@@ -34,6 +34,8 @@ public class Client {
 
     private String phoneNumber;
 
+    private String zone;
+
     private Double latitude;
     private Double longitude;
 

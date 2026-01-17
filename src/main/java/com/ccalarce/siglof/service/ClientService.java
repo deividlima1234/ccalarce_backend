@@ -61,6 +61,9 @@ public class ClientService {
             if (clientRequest.getPhoneNumber() != null) {
                 existing.setPhoneNumber(clientRequest.getPhoneNumber());
             }
+            if (clientRequest.getZone() != null) {
+                existing.setZone(clientRequest.getZone());
+            }
             if (clientRequest.getLatitude() != null) {
                 existing.setLatitude(clientRequest.getLatitude());
             }
@@ -98,6 +101,7 @@ public class ClientService {
         return (request.getFullName() != null && !request.getFullName().equals(existing.getFullName()))
                 || (request.getAddress() != null && !request.getAddress().equals(existing.getAddress()))
                 || (request.getPhoneNumber() != null && !request.getPhoneNumber().equals(existing.getPhoneNumber()))
+                || (request.getZone() != null && !request.getZone().equals(existing.getZone()))
                 || (request.getDocumentNumber() != null
                         && !request.getDocumentNumber().equals(existing.getDocumentNumber()))
                 || (request.getLatitude() != null && !request.getLatitude().equals(existing.getLatitude()))
