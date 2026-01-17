@@ -47,6 +47,12 @@ try:
     non_resp = requests.get(nonsense_url, headers=headers)
     print(f"Nonsense Status: {non_resp.status_code}")
     
+    debug_url = f"{base_url}/liquidation/debug-info"
+    print(f"Requesting debug info from {debug_url}...")
+    debug_resp = requests.get(debug_url, headers=headers)
+    print(f"Debug Status: {debug_resp.status_code}")
+    print("Debug Body:", debug_resp.text)
+    
     print("Response Body Head:")
     print(hist_resp.text[:500])
     

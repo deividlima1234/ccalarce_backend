@@ -85,7 +85,12 @@ public class LiquidationController {
 
         System.out.println("DEBUG: User " + user.getUsername() + " Authorities: " + user.getAuthorities());
 
-        return ResponseEntity.ok(service.getHistory(user, driverId, status, start, end, pageable));
+        try {
+            return ResponseEntity.ok(service.getHistory(user, driverId, status, start, end, pageable));
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("Error inside controller: " + e.getMessage());
+        }
     }
 
     @GetMapping("/debug-info")
