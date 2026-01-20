@@ -10,6 +10,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -75,13 +77,31 @@ public class UserService {
         userRepository.delete(user);
     }
 
+    @Transactional
+    public void uploadProfilePicture(Long userId, MultipartFile file) throws IOException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setProfilePicture(file.getBytes());
+        user.setProfilePictureContentType(file.getContentType());
+        userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public User getProfilePictureWorker(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
     private UserDto mapToDto(User user) {
+        String profilePictureUrl = user.getProfilePicture() != null ? "/api/v1/users/" + user.getId() + "/picture"
+                : null;
         return UserDto.builder()
                 .id(user.getId())
                 .username(user.getUsername())
                 .fullName(user.getFullName())
                 .role(user.getRole())
                 .active(user.getActive())
+                .profilePictureUrl(profilePictureUrl)
                 .build();
     }
 }

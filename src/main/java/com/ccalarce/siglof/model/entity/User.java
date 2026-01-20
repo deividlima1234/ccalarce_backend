@@ -42,6 +42,11 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Boolean active;
 
+    @Lob
+    private byte[] profilePicture;
+
+    private String profilePictureContentType;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 

@@ -12,4 +12,5 @@ public class UserDto {
     private String fullName;
     private Role role;
     private Boolean active;
+    private String profilePictureUrl;
 }

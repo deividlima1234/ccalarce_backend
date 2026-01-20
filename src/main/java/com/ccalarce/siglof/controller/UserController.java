@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.http.MediaType;
+import java.io.IOException;
 
 import java.util.List;
 
@@ -21,6 +24,24 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<UserDto> getMe() {
         return ResponseEntity.ok(service.getCurrentUser());
+    }
+
+    @PostMapping("/me/picture")
+    public ResponseEntity<Void> uploadProfilePicture(@RequestParam("file") MultipartFile file) throws IOException {
+        UserDto currentUser = service.getCurrentUser();
+        service.uploadProfilePicture(currentUser.getId(), file);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{id}/picture")
+    public ResponseEntity<byte[]> getProfilePicture(@PathVariable Long id) {
+        com.ccalarce.siglof.model.entity.User user = service.getProfilePictureWorker(id);
+        if (user.getProfilePicture() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType(user.getProfilePictureContentType()))
+                .body(user.getProfilePicture());
     }
 
     @GetMapping
