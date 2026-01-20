@@ -42,7 +42,8 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Boolean active;
 
-    @Lob
+    // Explicitly force 'bytea' to avoid any OID/Lob ambiguity
+    @Column(columnDefinition = "bytea")
     private byte[] profilePicture;
 
     private String profilePictureContentType;
